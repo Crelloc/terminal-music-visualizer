@@ -5,8 +5,37 @@
 #NOTE: 
 Sampling rate refers to sample frames per second. For stereo, 1 frame consists of **2 channels** (1 for left channel and 1 for right channel).
 
-SDL's default samples per cycle(spc) is 4096, 4096spc. So frames per cycle(fpc) is 4096/2 == 2048fpc.
+SDL's default samples per cycle(spc) is 4096, 4096spc. So frames per cycle(fpc) is 4096 == 4096fpc.
 
+SDL's audio device will change the default samples cycle:
+
+```c++
+SDL_AudioSpec               wavSpec, have;                //SDL data type to analyze WAV file.
+
+SDL_AudioDeviceID device = SDL_OpenAudioDevice(NULL, 0, &wavSpec, &have,
+            SDL_AUDIO_ALLOW_ANY_CHANGE);
+```
+So we must check and update our audio information:
+
+```c++
+ //Update audio information if device has changed any default settings
+    if(wavSpec.format != have.format){
+		wavSpec.format = have.format;
+        cout << "wavSpec.format updated!: " << std::hex << wavSpec.format << endl;
+    }
+    if(wavSpec.samples != have.samples){
+		audio.Samples = wavSpec.samples = have.samples;
+        cout << "wavSpec.samples updated!: " << wavSpec.samples << endl;
+    }
+    if(wavSpec.freq != have.freq){
+		audio.SamplesFrequency = wavSpec.freq = have.freq;
+        cout << "wavSpec.freq updated!: " << wavSpec.freq << endl;
+    }
+    if(wavSpec.size != have.size){
+        wavSpec.size = have.size;
+        cout << "wavSpec.size updated!: " << wavSpec.size << endl;
+    }
+```
 
 The program only works with .wav audio files that contain **signed 16 bit data** and has 2 channels (Left and Right).  However anyone can easily add code so that it can run a wav file that contains a different bit width, a different number of channels and/or uses unsigned data values. 
 
