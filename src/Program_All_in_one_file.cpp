@@ -194,7 +194,7 @@ restart:            SDL_PauseAudioDevice(device, 1);
                     //Pause = true;
                     cin >> sec; 
                     //cps = cycles per sec
-                    cps = audio.SamplesFrequency/2048; //we have frames/sec and cycles/frame. | 4096 buffer size per cycle ==> 2048 sample frames per cycle, same as [2048L's + 2048R's]
+                    cps = audio.SamplesFrequency/audio.Samples; //we have frames/sec and cycles/frame. | 8192 buffer size per cycle ==> 2048 sample frames per cycle: (8192 bytes = 2 bytes (byte_size for 16 bit audio samples) X 2 channels (for stereo) X 2048 samples( or frames)), same as [2048L's + 2048R's]
                     if((gc - sec*cps) < 0){//we want cycles given seconds
                                                                     
                         goto restart;
@@ -202,15 +202,15 @@ restart:            SDL_PauseAudioDevice(device, 1);
                     else{
                         
                         gc = gc - sec*cps;
-                        audio.pos-=(sec*cps*8192); //we want bytes, so we use the fact that there are 8192 bytes per cycle 
-                        audio.length+=(sec*cps*8192);
+                        audio.pos-=(sec*cps*wavSpec.size); //we want bytes, so we use the fact that there are 8192 bytes per cycle 
+                        audio.length+=(sec*cps*wavSpec.size);
                         goto start;
                     }
                     break;
                 case 'f':
                     SDL_PauseAudioDevice(device, 1);
                     cin >> sec;
-                    cps = audio.SamplesFrequency/2048;
+                    cps = audio.SamplesFrequency/audio.Samples;
 
                     if((gc + sec*cps) >= g_array_limit){
                         system("clear");
@@ -219,8 +219,8 @@ restart:            SDL_PauseAudioDevice(device, 1);
                     }
                     else{
                         gc = gc + sec*cps;
-                        audio.pos+=(sec*cps*8192); //we want bytes, so we use the fact that there are 8192 bytes per cycle 
-                        audio.length-=(sec*cps*8192);
+                        audio.pos+=(sec*cps*wavSpec.size); //we want bytes, so we use the fact that there are 8192 bytes per cycle 
+                        audio.length-=(sec*cps*wavSpec.size);
                         goto start;
                     }
                     break;
