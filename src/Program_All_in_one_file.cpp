@@ -287,7 +287,6 @@ void initializer_vars(){
     fft_results = new FFT_results[ N ];
     g_array_limit = N;
     n_frames = audio.Samples;
-    cout << "before fftw_malloc" << endl;
     for(int c=0; c<wavSpec.channels; c++){
     	fftw[c].in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n_frames);
     	fftw[c].out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n_frames);
