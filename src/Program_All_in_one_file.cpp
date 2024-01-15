@@ -138,16 +138,23 @@ int main(int argc, char** argv)
     }
 
     //Update audio information if device has changed any default settings
-    if(wavSpec.format != have.format)
-		wavSpec.format = have.format && cout << "wavSpec.format updated!: " << std::hex << have.format << endl;
-    if(wavSpec.samples != have.samples)
-		audio.Samples = wavSpec.samples = have.samples && cout << "wavSpec.samples updated!: " << have.samples << endl;
-    if(wavSpec.freq != have.freq)
-		audio.SamplesFrequency = wavSpec.freq = have.freq && cout << "wavSpec.freq updated!: " << have.freq << endl;
-    if(wavSpec.size != have.size)
-        wavSpec.size = have.size && cout << "wavSpec.size updated!: " << have.size << endl;
-
-    PARSE_COMPUTE_ANALYZE_WAVEFILE();                                         
+    if(wavSpec.format != have.format){
+		wavSpec.format = have.format;
+        cout << "wavSpec.format updated!: " << std::hex << wavSpec.format << endl;
+    }
+    if(wavSpec.samples != have.samples){
+		audio.Samples = wavSpec.samples = have.samples;
+        cout << "wavSpec.samples updated!: " << wavSpec.samples << endl;
+    }
+    if(wavSpec.freq != have.freq){
+		audio.SamplesFrequency = wavSpec.freq = have.freq;
+        cout << "wavSpec.freq updated!: " << wavSpec.freq << endl;
+    }
+    if(wavSpec.size != have.size){
+        wavSpec.size = have.size;
+        cout << "wavSpec.size updated!: " << wavSpec.size << endl;
+    }
+    PARSE_COMPUTE_ANALYZE_WAVEFILE();
     AUDIO_DEVICE_CONTROL(device);
     CLEANUPMESS(device);
   
@@ -274,7 +281,6 @@ void initializer_vars(){
             break;
            
     }
-
     fftw = new FFTW[ wavSpec.channels ];
     fftw[0].index = 0;
     fftw[1].index = 1;
@@ -486,7 +492,6 @@ void PARSE_COMPUTE_ANALYZE_WAVEFILE(){
     initializer_vars();
 
     buffer = new int8_t[BUFFER_SIZE];
-   
     bytesRead = fread(buffer, sizeof buffer[0], filesize-audio.data_size, wavFile); //Skip header information in .WAV file
 
     while ((bytesRead = fread(buffer, sizeof buffer[0], BUFFER_SIZE / (sizeof buffer[0]), wavFile)) > 0) //Reading actual audio data
