@@ -85,7 +85,7 @@ struct AudioData
 FFTW                        *fftw;           
 FFT_results                 *fft_results;
 AudioData                   audio;
-SDL_AudioSpec               wavSpec;                //SDL data type to analyze WAV file.
+SDL_AudioSpec               wavSpec, have;                //SDL data type to analyze WAV file.
                                                     //A structure that contains the audio output format. 
 int                         g_array_limit;           //It also contains a callback that is called when the audio device needs more data.
 int                         gc = 0;                 //global counter that increments every 4096 samples 
@@ -128,8 +128,7 @@ int main(int argc, char** argv)
     if(INITIALIZE_SDL_AND_WAV_VARIABLES())
         return 1;
 
-   
-    SDL_AudioDeviceID device = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL,
+    SDL_AudioDeviceID device = SDL_OpenAudioDevice(NULL, 0, &wavSpec, &have,
             SDL_AUDIO_ALLOW_ANY_CHANGE);
     if(device == 0)
     {
@@ -137,6 +136,16 @@ int main(int argc, char** argv)
         std::cerr << "Error: " << SDL_GetError() << std::endl;
         return 1;
     }
+
+    //Update audio information if device has changed any default settings
+    if(wavSpec.format != have.format)
+		wavSpec.format = have.format && cout << "wavSpec.format updated!: " << std::hex << have.format << endl;
+    if(wavSpec.samples != have.samples)
+		audio.Samples = wavSpec.samples = have.samples && cout << "wavSpec.samples updated!: " << have.samples << endl;
+    if(wavSpec.freq != have.freq)
+		audio.SamplesFrequency = wavSpec.freq = have.freq && cout << "wavSpec.freq updated!: " << have.freq << endl;
+    if(wavSpec.size != have.size)
+        wavSpec.size = have.size && cout << "wavSpec.size updated!: " << have.size << endl;
 
     PARSE_COMPUTE_ANALYZE_WAVEFILE();                                         
     AUDIO_DEVICE_CONTROL(device);
