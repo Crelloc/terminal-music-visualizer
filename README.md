@@ -13,12 +13,15 @@ The program only works with .wav audio files that contain **signed 16 bit data**
  
 ##Software:
 Install fftw and libsndfile.  The source code for these programs are provided in the repository.
+- Install libsndfile in ubuntu: sudo apt install sndfile-programs
 
 Install SDL2 (https://wiki.libsdl.org/Installation)
 
 Install GDB; used for debugging purposes if necessary.
 
 Install g++ compiler
+
+
 
 Install avconv ( https://libav.org/download/  if running debian based distro run "sudo apt-get install libav-tools")
 

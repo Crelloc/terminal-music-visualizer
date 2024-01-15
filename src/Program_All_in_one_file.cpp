@@ -97,7 +97,7 @@ const char                        vis[]= "|";          //character to print wave
 char                        *filename;
 
 // Function prototypes
-void initializer_vars(uint32_t*);
+void initializer_vars();
 void create_wav_graph(int); 
 void printwaveform();
 char* getfilepath();
@@ -261,9 +261,8 @@ void MyAudioCallback(void* userdata, Uint8* stream, int streamLength)
    
 
 }
-void initializer_vars(uint32_t* BUFFER_SIZE){
+void initializer_vars(){
 
-    int byte_width;
     int N, n_frames ;
 
     switch((int)SDL_AUDIO_BITSIZE(wavSpec.format)){
@@ -271,9 +270,7 @@ void initializer_vars(uint32_t* BUFFER_SIZE){
             
         case (16):   
         
-            byte_width = 2;
-            N = (int)(ceil((float)audio.length/(audio.Samples*byte_width)));
-            *BUFFER_SIZE = audio.Samples*byte_width;
+            N = (int)(ceil((float)audio.length/(wavSpec.size)));
             break;
            
     }
@@ -283,8 +280,8 @@ void initializer_vars(uint32_t* BUFFER_SIZE){
     fftw[1].index = 1;
     fft_results = new FFT_results[ N ];
     g_array_limit = N;
-    n_frames = audio.Samples/wavSpec.channels;
-
+    n_frames = audio.Samples;
+    cout << "before fftw_malloc" << endl;
     for(int c=0; c<wavSpec.channels; c++){
     	fftw[c].in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n_frames);
     	fftw[c].out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n_frames);
@@ -475,7 +472,7 @@ void PARSE_COMPUTE_ANALYZE_WAVEFILE(){
 
     size_t bytesRead;
    
-    uint32_t BUFFER_SIZE;
+    uint32_t BUFFER_SIZE = wavSpec.size;
     int8_t* buffer ;   
     int M;
     int F; // used for number of frames
@@ -486,7 +483,7 @@ void PARSE_COMPUTE_ANALYZE_WAVEFILE(){
     FILE* wavFile = fopen(filename, "r");
     int filesize = getFileSize(wavFile);
 
-    initializer_vars(&BUFFER_SIZE);
+    initializer_vars();
 
     buffer = new int8_t[BUFFER_SIZE];
    
@@ -573,7 +570,7 @@ void printstats(){
     printf("%s%d", "Sample Rate : ", audio.SamplesFrequency );
     putchar('\n');
    
-    printf("%s%d", "Frames per Period : ", audio.Samples/2 );
+    printf("%s%d", "Frames (samples) per Period : ", audio.Samples);
     putchar('\n');
     
     double val = audio.length/wavSpec.channels;
@@ -667,7 +664,7 @@ char* getfilepath(){
 	char buffer[1024];
 	FILE *fp;
   	
-
+    cout << "getfilepath()" << endl;
   	snprintf(buffer, 1024, " avconv -i %s -f wav temp.wav",filename); //convert mp3 to wav file
   	system(buffer);
     /* Open the command for reading. */
@@ -763,7 +760,7 @@ int INITIALIZE_SDL_AND_WAV_VARIABLES(){
     wavSpec.callback = MyAudioCallback;
     wavSpec.userdata = &audio;
 
-    return 0;
+    
 /*
     Debugging values of wavSpec 
     
@@ -774,6 +771,7 @@ int INITIALIZE_SDL_AND_WAV_VARIABLES(){
           << "wavSpec.samples = "   << (int)wavSpec.samples << std::endl;
 
 */
+    return 0;
 }
 
 void CLEANUPMESS(SDL_AudioDeviceID device){
